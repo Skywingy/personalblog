@@ -56,7 +56,9 @@ export default function SinglePost() {
                 {post.photo && (
                     <img src={PF + post.photo} alt="img" className="singlePostImg" />
                 )}
-                {updateMode ? (
+            {user && (
+                <h1 className="singlePostTitle">
+                    {updateMode ? (
                     <input
                         type="text"
                         value={title}
@@ -64,22 +66,28 @@ export default function SinglePost() {
                         autoFocus
                         onChange={(e) => setTitle(e.target.value)}
                     />
-                ) : (
-                <h1 className="singlePostTitle">
-                    {title}
+                    ) : (
+                    title
+                    )}
                     {post.username === user.username && (
                     <div className="singlePostEdit">
-                        <i className="singlePostIcon fa-solid fa-pen-to-square"
-                        onClick={()=> setUpdateMode(true)}></i>
-                        <i className="singlePostIcon fa-solid fa-delete-left" onClick={handleDelete}></i>
+                        <i
+                        className="singlePostIcon fa-solid fa-pen-to-square"
+                        onClick={() => setUpdateMode(true)}
+                        />
+                        <i className="singlePostIcon fa-solid fa-delete-left" onClick={handleDelete} />
                     </div>
                     )}
                 </h1>
+                )}
+            {!user && (
+                <h1 className="singlePostTitle">{title}</h1>
             )}
+
                 <div className="singlePostInfo">
                         <span className='singlePostAuthor'>
                             <Link to={`/?user=${post.username}`} className="link">
-                                Autor:  <b>{post.username}</b>
+                                Author:  <b>{post.username}</b>
                             </Link>
                             
                         </span>

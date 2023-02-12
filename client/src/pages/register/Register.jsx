@@ -19,6 +19,7 @@ export default function register() {
                 email,
                 password
             });
+            console.log("done")
             res.data  && window.location.replace("login");
         }catch(err){
             setError(true);

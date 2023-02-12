@@ -3,7 +3,8 @@ import React, { useRef } from 'react'
 import { useContext } from 'react';
 import { Link } from 'react-router-dom'
 import { Context } from '../../context/Context';
-import './login.css'
+import './login.css';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -15,6 +16,7 @@ export default function Login() {
     const userRef = useRef();
     const passwordRef = useRef();
     const { dispatch, isFetching } = useContext(Context);
+    const navigate = useNavigate();
 
 
     const handleSubmit = async (e) => {
@@ -24,9 +26,13 @@ export default function Login() {
             const res = await axios.post('/auth/login', {
                 username: userRef.current.value,
                 password: passwordRef.current.value,
-            })
+            });
+            
             dispatch({type: "LOGIN_SUCCESS", payload: res.data});
-        }   catch(err){
+            console.log('============', res.data);
+            navigate('/');
+        }   
+        catch(err){
             dispatch({type: "LOGIN_FAILURE"});
         }
     }

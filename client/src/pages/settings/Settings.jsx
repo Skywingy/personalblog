@@ -17,16 +17,18 @@ export default function Settings() {
     const PF = "http://localhost:3000/images/";
 
     const handleSubmit = async (e) => {
+        
         e.preventDefault();
         dispatch({
             type:"UPDATE_START"
         });
         const updatedUser = {
             userId: user._id,
-            username,
-            email,
-            password,
         };
+        if (username) updatedUser.username = username;
+        if (email) updatedUser.email = email;
+        if (password) updatedUser.password = password;
+        
         if(file){
             const data = new FormData();
             const filename = Date.now() + file.name;

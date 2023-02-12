@@ -18,11 +18,17 @@ const PostShema = new mongoose.Schema(
         username:{
             type:String,
             required: true
+            
         },
         categories:{
             type:Array,
             required:false
         },
+        userId:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        }
     },
     { timestamps: true }
 );

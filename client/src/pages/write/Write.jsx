@@ -10,12 +10,14 @@ export default function Write() {
     const [desc, setDesc] = useState('');
     const [file, setFile] = useState(null);
     const {user} = useContext(Context);
+    
 
-    console.log(user);
     const hanldeSubmit = async (e) => {
+        console.log('-----------------------', user)
         e.preventDefault();
         const newPost = {
             username: user.username,
+            userId: user._id,
             title,
             desc,
         };
@@ -28,13 +30,17 @@ export default function Write() {
             try {
                 await axios.post("/upload", data);
             }   catch(err){
-
+                console.error(err);
             }
         }
         try {
+            console.log("---------", newPost)
             const res = await axios.post('/posts', newPost);
+            
             window.location.replace("/post/" + res.data._id);
-        }catch(err){
+        }
+        
+        catch(err){
 
         }
     }

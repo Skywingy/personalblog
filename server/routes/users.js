@@ -2,6 +2,7 @@ const router = require("express").Router();
 const User = require('../models/User');
 const Post = require('../models/Post');
 const bcrypt = require('bcrypt');
+const { update } = require("../models/Category");
 
 
 
@@ -15,13 +16,16 @@ router.put("/:id", async (req, res) => {
             req.body.password = await bcrypt.hash(req.body.password, salt);
         }
         try {
+            
             const updatedUser = await User.findByIdAndUpdate(req.params.id, {
                 $set: req.body,
             },
             { new: true }
             );
+            const updatedPosts = await Post.updateMany({ userId: req.body.id }, { $set: { username: req.body.username } })
+
             res.status(200).json(updatedUser);
-            
+
         } catch(err){
             res.status(500).json(err);
         }

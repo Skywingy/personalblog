@@ -9,6 +9,10 @@ const categoryRoute = require('./routes/category');
 const multer = require('multer');
 const path = require('path');
 
+const { uploadFile } = require('./s3');
+
+
+
 dotenv.config();
 app.use(express.json());
 app.use('/server/images', express.static(path.join(__dirname, '/images')));
@@ -26,12 +30,18 @@ const storage = multer.diskStorage({
     },
 });
 
-const upload = multer({storage: storage});
+const upload = multer({storage: storage}); 
 
 
-app.post('/server/upload', upload.single('file'),(req,res)=>{
+app.post('/server/upload', upload.single('file'), async(req,res)=>{
+    const result = await uploadFile(req.file);
+    console.log('==============', result)
+
     res.status(200).json("File uploaded");
-})
+}) 
+
+
+
 
 app.use('/server/auth', authRoute);
 app.use('/server/users', userRoute);
