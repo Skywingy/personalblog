@@ -23,14 +23,16 @@ mongoose.set('strictQuery', true);
 mongoose.connect(process.env.MONGO_URL,{
 }).then(console.log("Connected successfully")).catch(err=>(console.log("Errorr", err)));
 
-const storage = multer.diskStorage({
+/* const storage = multer.diskStorage({
     destination:(req, file, cb) => {
         cb(null, 'images');
     }, 
     filename:(req, file, cb) => {
         cb(null, req.body.name);
     },
-});
+}); */
+
+const storage = multer.memoryStorage();
 
 const upload = multer({storage: storage}); 
 
@@ -65,7 +67,7 @@ const uploadFileToFirebase = async (file) => {
         contentType: 'image/jpeg'
     };
     const storageRef = ref(storage2, `/files/${filename}`);
-    const uploadTask = uploadBytesResumable(storageRef, readFileSync(file.path), metadata);
+    const uploadTask = uploadBytesResumable(storageRef, file.buffer, metadata);
 
     return new Promise((resolve, reject) => {
         uploadTask.on('state_changed',
