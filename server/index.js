@@ -12,6 +12,7 @@ const { storage2 } = require('./ firebaseConfig.js');
 const {ref, uploadBytesResumable, getDownloadURL} = require( "firebase/storage");
 const { readFileSync } =  require("node:fs");
 const Post = require('./models/Post');
+const fs = require('fs');
 
 
 
@@ -23,16 +24,15 @@ mongoose.set('strictQuery', true);
 mongoose.connect(process.env.MONGO_URL,{
 }).then(console.log("Connected successfully")).catch(err=>(console.log("Errorr", err)));
 
-/* const storage = multer.diskStorage({
+
+const storage = multer.diskStorage({
     destination:(req, file, cb) => {
         cb(null, 'images');
     }, 
     filename:(req, file, cb) => {
         cb(null, req.body.name);
     },
-}); */
-
-const storage = multer.memoryStorage();
+});
 
 const upload = multer({storage: storage}); 
 
@@ -67,7 +67,7 @@ const uploadFileToFirebase = async (file) => {
         contentType: 'image/jpeg'
     };
     const storageRef = ref(storage2, `/files/${filename}`);
-    const uploadTask = uploadBytesResumable(storageRef, file.buffer, metadata);
+    const uploadTask = uploadBytesResumable(storageRef, readFileSync(file.path), metadata);
 
     return new Promise((resolve, reject) => {
         uploadTask.on('state_changed',
@@ -84,7 +84,7 @@ const uploadFileToFirebase = async (file) => {
                     break;
             }
         },
-        (error) => {
+        (error) => {uploadFileToFirebase
             switch (error.code) {
                 case 'storage/unauthorized':
                     // User doesn't have permission to access the object
@@ -105,6 +105,14 @@ const uploadFileToFirebase = async (file) => {
             resolve(downloadURL);
             }
         );
+        // Delete local file after uploading to Firebase
+        fs.unlink(file.path, (err) => {
+            if (err) {
+            console.error(err);
+            } else {
+            console.log(`Local file ${file.path} deleted successfully`);
+            }
+        });
     });
 }
 
