@@ -3,34 +3,27 @@ const User = require('../models/User');
 const Post = require('../models/Post');
 const bcrypt = require('bcrypt');
 const { findById } = require("../models/User");
-const  getObjectSignedUrl   = require('../s3');
+const dotenv = require('dotenv');
 
 
+
+dotenv.config();
 
 
 //CREATE POST
-router.post("/", async (req, res) => {
-    console.log("1", req.body);
-
+/* router.post("/", async(req, res) => {
     const newPost = new Post(req.body);
-
-    console.log('2', newPost);
-
     try{
-        console.log("2a", newPost);
         const savedPost = await newPost.save();
-        console.log('3',savedPost)
         res.status(200).json(savedPost);
         console.log("goodjob")
-
     }catch(err){
-        console.log("4")
+        console.log(err)
         res.status(500).json(err);
     }
-})
+}) */
 
 //UPDATE POST
-
 router.put("/:id", async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
@@ -83,8 +76,11 @@ router.delete("/:id", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
+        console.log('post', post)
+        await post.save();
         res.status(200).json(post);
         } catch (err) {
+        console.error('errorrr', err);
         res.status(500).json(err);
     }
 });
@@ -99,7 +95,6 @@ router.get("/", async (req, res) => {
         if (username) {
             posts = await Post.find({ username });
             
-
         } else if (catName) {
             posts = await Post.find({
             categories: {
