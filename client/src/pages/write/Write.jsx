@@ -4,6 +4,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useContext } from 'react';
 import {Context} from '../../context/Context';
+const Chance = require('chance');
+
 
 export default function Write() {
     const [title, setTitle] = useState('');
@@ -13,7 +15,6 @@ export default function Write() {
     
 
     const hanldeSubmit = async (e) => {
-        console.log('-----------------------', user)
         e.preventDefault();
         const newPost = {
             username: user.username,
@@ -23,27 +24,33 @@ export default function Write() {
         };
         if(file){
             const data = new FormData();
-            const filename = Date.now() + file.name;
+            const chance = new Chance();
+            const randomString = chance.string({ length: 20, pool: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' });
+            const filename = Date.now() + randomString;
             data.append("name", filename);
             data.append("file", file);
+            data.append("username", user.username);
+            data.append("userId", user._id);
+            data.append("title", title);
+            data.append("desc", desc);
+            console.log('----------------', data)
             newPost.photo = filename;
             try {
-                await axios.post("/upload", data);
+                const res = await axios.post("/upload", data);
+                console.log('what is in thereeee', res)
+                window.location.replace("/post/" + res.data._id);
             }   catch(err){
-                console.error(err);
+                console.error(err)
             }
+            }
+            /* try {
+                const res = await axios.post('/posts', newPost);
+                window.location.replace("/post/" + res.data._id);
+            }
+            catch(err){
+                console.log('error', err)
+            } */
         }
-        try {
-            console.log("---------", newPost)
-            const res = await axios.post('/posts', newPost);
-            
-            window.location.replace("/post/" + res.data._id);
-        }
-        
-        catch(err){
-
-        }
-    }
 
     return (
         <div className='write'>
